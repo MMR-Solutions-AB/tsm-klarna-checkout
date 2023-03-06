@@ -1,4 +1,4 @@
-import { getProducts } from './services/api.js';
+import { getProducts, getProduct } from './services/api.js';
 import express from 'express';
 const app = express();
 import { config } from 'dotenv';
@@ -19,9 +19,14 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/product/:id', async function (req, res) {
-	const { id } = req.params;
-	const markup = `<h1>Hello ${id}</h1>`;
-	res.send(markup);
+	try {
+		const { id } = req.params;
+		const product = await getProduct(id);
+		const markup = `<h1>${product.title} - ${product.price} kr</h1>`;
+		res.send(markup);
+	} catch (error) {
+		res.send(error.message);
+	}
 });
 
 app.get('/confirmation', async function (req, res) {
