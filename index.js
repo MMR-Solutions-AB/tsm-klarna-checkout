@@ -1,5 +1,5 @@
 import { getProducts, getProduct } from './services/api.js';
-import { createOrder } from './services/klarna.js';
+import { createOrder, retrieveOrder } from './services/klarna.js';
 import express from 'express';
 const app = express();
 import { config } from 'dotenv';
@@ -32,8 +32,10 @@ app.get('/product/:id', async function (req, res) {
 });
 
 app.get('/confirmation', async function (req, res) {
-	const markup = `<h1>Hello confirmation</h1>`;
-	res.send(markup);
+	const order_id = req.query.order_id;
+	const klarnaJsonResponse = await retrieveOrder(order_id);
+	const html_snippet = klarnaJsonResponse.html_snippet;
+	res.send(html_snippet);
 });
 
 app.listen(process.env.PORT);
