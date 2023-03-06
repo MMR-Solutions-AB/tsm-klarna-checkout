@@ -1,4 +1,5 @@
 import { getProducts, getProduct } from './services/api.js';
+import { createOrder } from './services/klarna.js';
 import express from 'express';
 const app = express();
 import { config } from 'dotenv';
@@ -22,8 +23,9 @@ app.get('/product/:id', async function (req, res) {
 	try {
 		const { id } = req.params;
 		const product = await getProduct(id);
-		const markup = `<h1>${product.title} - ${product.price} kr</h1>`;
-		res.send(markup);
+		const klarnaJsonResponse = await createOrder(product);
+		const html_snippet = klarnaJsonResponse.html_snippet;
+		res.send(html_snippet);
 	} catch (error) {
 		res.send(error.message);
 	}
