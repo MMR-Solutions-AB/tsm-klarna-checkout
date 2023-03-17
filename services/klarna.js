@@ -49,7 +49,7 @@ export async function createOrder(product) {
 		merchant_urls: {
 			terms: 'https://www.example.com/terms.html',
 			checkout: 'https://www.example.com/checkout.html',
-			confirmation: 'http://localhost:3000/confirmation?order_id={checkout.order.id}',
+			confirmation: process.env.CONFIRMATION_URL,
 			push: 'https://www.example.com/api/push'
 		}
 	};
