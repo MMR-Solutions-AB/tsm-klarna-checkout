@@ -1,4 +1,5 @@
 import { getProducts, getProduct } from './services/api.js';
+import { createOrder } from './services/klarna.js';
 import express from 'express';
 const app = express();
 import { config } from 'dotenv';
@@ -6,7 +7,6 @@ config();
 
 app.get('/', async (req, res) => {
 	const products = await getProducts();
-	console.log(products);
 	const markup = products
 		.map(
 			(p) =>
@@ -20,7 +20,8 @@ app.get('/products/:id', async (req, res) => {
 	try {
 		const { id } = req.params;
 		const product = await getProduct(id);
-		const markup = `<h1>${product.title} - ${product.price} kr</h1>`;
+		const klarnaResponse = await createOrder(product);
+		const markup = klarnaResponse.html_snippet;
 		res.send(markup);
 	} catch (error) {
 		res.send(error.message);

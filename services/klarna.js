@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 export function getKlarnaAuth() {
-	const username = process.env.PUBLIC_KAY;
+	const username = process.env.PUBLIC_KEY;
 	const password = process.env.SECRET_KEY;
 	const auth = `Basic ${Buffer.from(username + ':' + password).toString('base64')}`;
 	return auth;
@@ -9,10 +9,11 @@ export function getKlarnaAuth() {
 
 // Skapar en order hos klarna
 export async function createOrder(product) {
+	console.log(product);
 	const path = '/checkout/vs/orders';
 	const auth = getKlarnaAuth();
 	// url = https://api.playground.klarna.com/checkout/vs/orders
-	const ulr = process.env.BASE_URL + path;
+	const url = process.env.BASE_URL + path;
 	const method = 'POST';
 	const headers = {
 		'Content-Type': 'application/json',
@@ -46,15 +47,15 @@ export async function createOrder(product) {
 			}
 		],
 		merchant_urls: {
-			terms: null,
-			checkout: null,
-			confirmation: null,
-			push: null
+			terms: 'https://www.example.com/terms.html',
+			checkout: 'https://www.example.com/checkout.html',
+			confirmation: 'http://localhost/3000/confirmation?order_id={checkout.order_id}',
+			push: 'https://www.example.com/api/push'
 		}
 	};
 
 	const body = JSON.stringify(payload);
-	const response = await fetch(ulr, { method, headers, body });
+	const response = await fetch(url, { method, headers, body });
 	const json = await response.json();
 
 	if (response.status === 200 || response.status === 201) {
