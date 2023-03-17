@@ -10,7 +10,7 @@ export function getKlarnaAuth() {
 // Skapar en order hos klarna
 export async function createOrder(product) {
 	console.log(product);
-	const path = '/checkout/vs/orders';
+	const path = '/checkout/v3/orders';
 	const auth = getKlarnaAuth();
 	// url = https://api.playground.klarna.com/checkout/vs/orders
 	const url = process.env.BASE_URL + path;
@@ -49,7 +49,7 @@ export async function createOrder(product) {
 		merchant_urls: {
 			terms: 'https://www.example.com/terms.html',
 			checkout: 'https://www.example.com/checkout.html',
-			confirmation: 'http://localhost/3000/confirmation?order_id={checkout.order_id}',
+			confirmation: 'http://localhost:3000/confirmation?order_id={checkout.order.id}',
 			push: 'https://www.example.com/api/push'
 		}
 	};
@@ -69,4 +69,20 @@ export async function createOrder(product) {
 }
 
 // Hämtar en order från Klarna
-export async function retrieveOrder(order_id) {}
+export async function retrieveOrder(order_id) {
+	const path = `/checkout/v3/orders/${order_id}`;
+	const auth = getKlarnaAuth();
+	const url = `${process.env.BASE_URL}${path}`;
+	const method = 'GET';
+	const headers = { Authorization: auth };
+	const response = await fetch(url, { method, headers });
+
+	if (response.status === 200 || response.status === 201) {
+		const json = await response.json();
+		return json;
+	} else {
+		return {
+			html_snippet: `<h1>${response.status} ${response.statusText}</h1>`
+		};
+	}
+}
